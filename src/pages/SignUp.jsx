@@ -35,12 +35,23 @@ const SignUp = () => {
     }
 
     try {
-      const response = await axios.post("https://hackathon-sage-nine.vercel.app/api/v1/register", data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      // const response = await axios.post("https://hackathon-sage-nine.vercel.app/api/v1/register", data, {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+     
+      //  });
+      const response = await axios.post(
+        "https://hackathon-sage-nine.vercel.app/api/v1/register",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // ✅ If using cookies or authentication
+        }
+      );
+      
       console.log("Success:", response.data);
       navigate("/Login")
     } catch (error) {
