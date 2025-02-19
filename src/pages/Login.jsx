@@ -101,69 +101,69 @@ const Login = () => {
 //   }
 // };
 
+
+
 const inputVal = async (data) => {
-  const { firstname, lastname, email, password } = data; 
-  console.log("Sending Data:", { firstname, lastname, email, password });
+
+  const { email, password } = data;
+
+  console.log("📤 Sending Data to Server:", { email, password });
 
   try {
-      const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/login", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ firstname, lastname, email, password }), 
-      });
+    const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/login", {
+      method: "POST",
+      credentials: "include",  // ✅ Cookies کو Store کرنے کے لیے ضروری ہے
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const responseData = await response.json();
-      console.log("Server Response:", responseData);
+    const responseData = await response.json();
+    console.log("📥 Server Response:", responseData);
 
-      if (response.ok) {
-          // ✅ Swal Alert for successful registration
-          Swal.fire({
-              title: "Sign-up Successful!",
-              text: "You can now log in to your account.",
-              icon: "success",
-              confirmButtonColor: "#234e94",
-              confirmButtonText: "Go to Login",
-          }).then(() => {
-              navigate("/Login");
-          });
-
-      } else if (response.status === 401 && responseData.message === "User already exists") {
-          // ❌ Swal Alert for email already in use
-          Swal.fire({
-              title: "Email already exists!",
-              text: "Try logging in or use a different email.",
-              icon: "warning",
-              confirmButtonColor: "#d33",
-              confirmButtonText: "OK",
-          });
-
+    if (response.ok) {
+      if (responseData.accessToken) {
+        localStorage.setItem("token", responseData.accessToken);
+        console.log("✅ Stored Token:", localStorage.getItem("token"));
       } else {
-          // ❌ Swal Alert for other errors
-          Swal.fire({
-              title: "Sign-up Failed!",
-              text: responseData?.message || "Something went wrong!",
-              icon: "error",
-              confirmButtonColor: "#d33",
-              confirmButtonText: "Try Again",
-          });
+        console.warn("⚠️ No Access Token Received");
       }
 
-  } catch (error) {
-      console.error("Error signing up:", error);
+      console.log("🍪 Cookies After Login:", document.cookie);
 
-      // ❌ Swal Alert for network error
+      // ✅ SweetAlert2 Success Message
       Swal.fire({
-          title: "Error!",
-          text: "Something went wrong! Please try again.",
-          icon: "error",
-          confirmButtonColor: "#d33",
-          confirmButtonText: "OK",
+        title: "Login Successful!",
+        text: "You are being redirected to Home...",
+        icon: "success",
+        timer: 2000, // 2 seconds delay
+        showConfirmButton: false,
       });
+
+      setTimeout(() => {
+        navigate("/Home");
+      }, 2000); // Redirect after alert disappears
+
+    } else {
+      // ❌ SweetAlert2 Error Message
+      Swal.fire({
+        title: "Login Failed!",
+        text: responseData.message || "Invalid credentials, please try again.",
+        icon: "error",
+      });
+    }
+  } catch (error) {
+    console.error("🚨 Error logging in:", error);
+    Swal.fire({
+      title: "Error!",
+      text: "Something went wrong. Please try again later.",
+      icon: "error",
+    });
   }
 };
+
+
 
 
   return (
