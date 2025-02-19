@@ -37,42 +37,67 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
+
   const inputVal = async (data) => {
     console.log("Form Data:", data); 
-
-    if (!data.password) {
-      console.error("Error: Password is missing!");
-      return;
-    }
-
+    // const { name, email, password } = this.state;
     try {
-    
-        const response = await axios.post(
-          "https://hackathon-sage-nine.vercel.app/api/v1/login",
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true, // ✅ If using cookies or authentication
-          }
-        );
-      ;
-
-      console.log("Success:", response.data);
-
-      const token = response.data.refreshToken;
-      
-      if (token) {
-        localStorage.setItem('accessToken', token);
-        console.log('Access token saved to localStorage');
+      const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert("Login successful!");
+        localStorage.setItem("token", data.token);
+      } else {
+        alert(data.message || "Login failed");
       }
-
-      navigate("/");
     } catch (error) {
-      console.error("Error during login:", error.response ? error.response.data : error.message);
+      console.error("Error logging in:", error);
     }
   };
+
+
+  // const inputVal = async (data) => {
+  //   console.log("Form Data:", data); 
+
+  //   if (!data.password) {
+  //     console.error("Error: Password is missing!");
+  //     return;
+  //   }
+
+  //   try {
+    
+  //       const response = await axios.post(
+  //         "https://hackathon-sage-nine.vercel.app/api/v1/login",
+  //         data,
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           withCredentials: true, // ✅ If using cookies or authentication
+  //         }
+  //       );
+  //     ;
+
+  //     console.log("Success:", response.data);
+
+  //     const token = response.data.refreshToken;
+      
+  //     if (token) {
+  //       localStorage.setItem('accessToken', token);
+  //       console.log('Access token saved to localStorage');
+  //     }
+
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error("Error during login:", error.response ? error.response.data : error.message);
+  //   }
+  // };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

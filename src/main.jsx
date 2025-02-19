@@ -10,6 +10,7 @@ import WinterCollection from './pages/WinterCollection.jsx'
 import NewArrivals from './pages/NewArrivals.jsx'
 import Login from './pages/Login.jsx'
 import SignUp from './pages/SignUp.jsx'
+
 const router = createBrowserRouter([
   {
   path : '/',

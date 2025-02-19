@@ -1,3 +1,4 @@
+// // import { signUpUser } from '../config/firebase/firebasemethods';
 
   //  async function inputVal(data) {
     //   console.log(data);
@@ -15,49 +16,112 @@
   //   }
   // }
 
- import React from 'react'
- import axios from "axios";
- import { useForm } from 'react-hook-form';
+//  import React from 'react'
+//  import axios from "axios";
+//  import { useForm } from 'react-hook-form';
+// import { Link, useNavigate } from 'react-router-dom';
+
+//  const SignUp = () => {
+//      const navigate = useNavigate()
+//    const {
+//       register,
+//       handleSubmit,
+//       formState: { errors },
+//     } = useForm();
+  
+
+// const inputVal = async (data) => {
+//   console.log("Form Data:", data); 
+//   // const { name, email, password } = this.state;
+//   try {
+//     const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/register", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//        body: JSON.stringify({ email, password }),
+//     });
+//     const data = await response.json();
+//     if (response.ok) {
+//       alert("Sign-up successful!");
+//     } else {
+//       alert(data.message || "Sign-up failed");
+//     }
+//     navigate("/Login")
+//   } catch (error) {
+//     console.error("Error signing up:", error);
+//   }
+// }
+
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-// // import { signUpUser } from '../config/firebase/firebasemethods';
 
 const SignUp = () => {
-     const navigate = useNavigate()
-  const { register, handleSubmit , formState: { errors }} = useForm();
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
+  // const inputVal = async (data) => {
+  //   console.log("Form Data:", data); 
+
+  //   // ✅ Destructure data correctly
+  //   const { email, password } = data; 
+
+  //   try {
+  //     const response = await fetch("/api/v1/register", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ email, password }),
+  //       mode: "cors", // ✅ Add CORS mode
+  //       credentials: "include", // ✅ If using cookies for authentication
+  //     });
+
+  //     const responseData = await response.json(); // ✅ Use a different variable name to avoid conflicts
+
+  //     if (response.ok) {
+  //       alert("Sign-up successful!");
+  //       navigate("/Login"); // ✅ Move inside the success condition
+  //     } else {
+  //       alert(responseData.message || "Sign-up failed");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error signing up:", error);
+  //   }
   const inputVal = async (data) => {
-    
-    console.log("Form Data:", data); 
-
-    if (!data.password) {
-      console.error("Error: Password is missing!");
-      return;
-    }
-
+    const { email, password } = data;
+    console.log("Sending Data:", { email, password }); // ✅ Debugging
+  
     try {
-      // const response = await axios.post("https://hackathon-sage-nine.vercel.app/api/v1/register", data, {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-     
-      //  });
-      const response = await axios.post(
-        "https://hackathon-sage-nine.vercel.app/api/v1/register",
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true, // ✅ If using cookies or authentication
-        }
-      );
-      
-      console.log("Success:", response.data);
-      navigate("/Login")
+      const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }), // ✅ Ensure proper JSON
+      });
+  
+      const responseText = await response.text();
+      console.log("Raw Response:", responseText); // ✅ Print Raw Response
+  
+      const responseData = JSON.parse(responseText);
+      if (response.ok) {
+        alert("Sign-up successful!");
+        navigate("/Login");
+      } else {
+        alert(responseData.message || "Sign-up failed");
+      }
     } catch (error) {
-      console.error("Error during registration:", error.response ? error.response.data : error.message);
+      console.error("Error signing up:", error);
     }
   };
+  
+   
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
