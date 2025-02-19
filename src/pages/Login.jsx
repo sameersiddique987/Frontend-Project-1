@@ -27,6 +27,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import React from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const Login = () => {
 
@@ -38,66 +39,132 @@ const Login = () => {
   } = useForm();
 
 
-  const inputVal = async (data) => {
-    console.log("Form Data:", data); 
-    // const { name, email, password } = this.state;
-    try {
+//   const inputVal = async (data) => {
+//     const {  email, password } = data;
+//     console.log("Sending Data:", {  email, password }); 
+//     try {
+//       const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/login", {
+//         method: "POST",
+       
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ email, password }),
+//       });
+   
+// console.log("Server Response:", data); 
+
+// if (response.ok) {
+//   localStorage.setItem("token", data.accessToken);
+//   console.log("Stored Token:", localStorage.getItem("token"));
+//   navigate("/Home");
+//       }
+//        else {
+//         alert(data.message || "Login failed");
+//       }
+//     } catch (error) {
+//       console.error("Error logging in:", error);
+//     }
+//   };
+
+// const inputVal = async (data) => {
+//   const { email, password } = data;
+//   console.log("Sending Data:", { email, password });
+
+//   try {
+//       const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/login", {
+//           method: "POST",
+//           credentials: "include",  // ✅ Cookies کو Save کرنے کے لیے ضروری ہے
+//           headers: {
+//               "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({ email, password }),
+//       });
+
+//       const responseData = await response.json();
+//       console.log("Server Response:", responseData);
+
+//       if (response.ok) {
+//           // ✅ Access Token کو LocalStorage میں Save کریں
+//           localStorage.setItem("token", responseData.accessToken);
+//           console.log("Stored Token:", localStorage.getItem("token"));
+
+//           // ✅ Cookies کو چیک کریں
+//           console.log("Cookies:", document.cookie);
+
+//           navigate("/Home");
+//       } else {
+//           alert(responseData.message || "Login failed");
+//       }
+//   } catch (error) {
+//       console.error("Error logging in:", error);
+//   }
+// };
+
+const inputVal = async (data) => {
+  const { firstname, lastname, email, password } = data; 
+  console.log("Sending Data:", { firstname, lastname, email, password });
+
+  try {
       const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+          method: "POST",
+          credentials: "include",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ firstname, lastname, email, password }), 
       });
-      const data = await response.json();
+
+      const responseData = await response.json();
+      console.log("Server Response:", responseData);
+
       if (response.ok) {
-        alert("Login successful!");
-        localStorage.setItem("token", data.token);
+          // ✅ Swal Alert for successful registration
+          Swal.fire({
+              title: "Sign-up Successful!",
+              text: "You can now log in to your account.",
+              icon: "success",
+              confirmButtonColor: "#234e94",
+              confirmButtonText: "Go to Login",
+          }).then(() => {
+              navigate("/Login");
+          });
+
+      } else if (response.status === 401 && responseData.message === "User already exists") {
+          // ❌ Swal Alert for email already in use
+          Swal.fire({
+              title: "Email already exists!",
+              text: "Try logging in or use a different email.",
+              icon: "warning",
+              confirmButtonColor: "#d33",
+              confirmButtonText: "OK",
+          });
+
       } else {
-        alert(data.message || "Login failed");
+          // ❌ Swal Alert for other errors
+          Swal.fire({
+              title: "Sign-up Failed!",
+              text: responseData?.message || "Something went wrong!",
+              icon: "error",
+              confirmButtonColor: "#d33",
+              confirmButtonText: "Try Again",
+          });
       }
-    } catch (error) {
-      console.error("Error logging in:", error);
-    }
-  };
 
+  } catch (error) {
+      console.error("Error signing up:", error);
 
-  // const inputVal = async (data) => {
-  //   console.log("Form Data:", data); 
+      // ❌ Swal Alert for network error
+      Swal.fire({
+          title: "Error!",
+          text: "Something went wrong! Please try again.",
+          icon: "error",
+          confirmButtonColor: "#d33",
+          confirmButtonText: "OK",
+      });
+  }
+};
 
-  //   if (!data.password) {
-  //     console.error("Error: Password is missing!");
-  //     return;
-  //   }
-
-  //   try {
-    
-  //       const response = await axios.post(
-  //         "https://hackathon-sage-nine.vercel.app/api/v1/login",
-  //         data,
-  //         {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           withCredentials: true, // ✅ If using cookies or authentication
-  //         }
-  //       );
-  //     ;
-
-  //     console.log("Success:", response.data);
-
-  //     const token = response.data.refreshToken;
-      
-  //     if (token) {
-  //       localStorage.setItem('accessToken', token);
-  //       console.log('Access token saved to localStorage');
-  //     }
-
-  //     navigate("/");
-  //   } catch (error) {
-  //     console.error("Error during login:", error.response ? error.response.data : error.message);
-  //   }
-  // };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

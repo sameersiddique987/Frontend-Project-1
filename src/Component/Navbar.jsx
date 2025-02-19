@@ -75,7 +75,7 @@ function Navbar() {
       console.log('Refresh token removed from localStorage');
 
       // Make the logout API call to the server
-      const response = await axios.get("http://localhost:3000/api/v1/logout", {
+      const response = await axios.get("https://hackathon-sage-nine.vercel.app/api/v1/logout", {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json",

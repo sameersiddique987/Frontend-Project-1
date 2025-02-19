@@ -16,46 +16,11 @@
   //   }
   // }
 
-//  import React from 'react'
-//  import axios from "axios";
-//  import { useForm } from 'react-hook-form';
-// import { Link, useNavigate } from 'react-router-dom';
-
-//  const SignUp = () => {
-//      const navigate = useNavigate()
-//    const {
-//       register,
-//       handleSubmit,
-//       formState: { errors },
-//     } = useForm();
-  
-
-// const inputVal = async (data) => {
-//   console.log("Form Data:", data); 
-//   // const { name, email, password } = this.state;
-//   try {
-//     const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/register", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//        body: JSON.stringify({ email, password }),
-//     });
-//     const data = await response.json();
-//     if (response.ok) {
-//       alert("Sign-up successful!");
-//     } else {
-//       alert(data.message || "Sign-up failed");
-//     }
-//     navigate("/Login")
-//   } catch (error) {
-//     console.error("Error signing up:", error);
-//   }
-// }
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -65,63 +30,113 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
-  // const inputVal = async (data) => {
-  //   console.log("Form Data:", data); 
-
-  //   // ✅ Destructure data correctly
-  //   const { email, password } = data; 
-
-  //   try {
-  //     const response = await fetch("/api/v1/register", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ email, password }),
-  //       mode: "cors", // ✅ Add CORS mode
-  //       credentials: "include", // ✅ If using cookies for authentication
-  //     });
-
-  //     const responseData = await response.json(); // ✅ Use a different variable name to avoid conflicts
-
-  //     if (response.ok) {
-  //       alert("Sign-up successful!");
-  //       navigate("/Login"); // ✅ Move inside the success condition
-  //     } else {
-  //       alert(responseData.message || "Sign-up failed");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error signing up:", error);
-  //   }
   const inputVal = async (data) => {
-    const { email, password } = data;
-    console.log("Sending Data:", { email, password }); // ✅ Debugging
+    const { firstname, lastname, email, password } = data; 
+    console.log("Sending Data:", { firstname, lastname, email, password });
   
     try {
-      const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }), // ✅ Ensure proper JSON
-      });
+        const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/register", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ firstname, lastname, email, password }), 
+        });
   
-      const responseText = await response.text();
-      console.log("Raw Response:", responseText); // ✅ Print Raw Response
+        const responseData = await response.json();
+        console.log("Server Response:", responseData);
   
-      const responseData = JSON.parse(responseText);
-      if (response.ok) {
-        alert("Sign-up successful!");
-        navigate("/Login");
-      } else {
-        alert(responseData.message || "Sign-up failed");
-      }
+        if (response.ok) {
+            // ✅ Swal Alert for successful registration
+            Swal.fire({
+                title: "Sign-up Successful!",
+                text: "You can now log in to your account.",
+                icon: "success",
+                confirmButtonColor: "#234e94",
+                confirmButtonText: "Go to Login",
+            }).then(() => {
+                navigate("/Login");
+            });
+  
+        } else if (response.status === 401 && responseData.message === "User already exists") {
+            // ❌ Swal Alert for email already in use
+            Swal.fire({
+                title: "Email already exists!",
+                text: "Try logging in or use a different email.",
+                icon: "warning",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "OK",
+            });
+  
+        } else {
+            // ❌ Swal Alert for other errors
+            Swal.fire({
+                title: "Sign-up Failed!",
+                text: responseData?.message || "Something went wrong!",
+                icon: "error",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Try Again",
+            });
+        }
+  
     } catch (error) {
-      console.error("Error signing up:", error);
+        console.error("Error signing up:", error);
+  
+        // ❌ Swal Alert for network error
+        Swal.fire({
+            title: "Error!",
+            text: "Something went wrong! Please try again.",
+            icon: "error",
+            confirmButtonColor: "#d33",
+            confirmButtonText: "OK",
+        });
     }
   };
   
-   
+  
+  // const inputVal = async (data) => {
+  //   const { firstname, lastname, email, password } = data; 
+  //   console.log("Sending Data:", { firstname, lastname, email, password });
+
+  //   try {
+  //     const response = await fetch("https://hackathon-sage-nine.vercel.app/api/v1/register", {
+  //       method: "POST",
+  //       credentials: "include",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ firstname, lastname, email, password }), 
+  //     });
+
+  //     let responseData;
+  //     try {
+  //       responseData = await response.json();
+  //     } catch (jsonError) {
+  //       console.error("Error parsing JSON:", jsonError);
+  //       throw new Error("Invalid server response");
+  //     }
+
+  //     if (response.ok) {
+        
+  //     Swal.fire({
+  //       title: "Success!",
+  //       text: "Item added to cart successfully.",
+  //       icon: "success",
+  //       confirmButtonColor: "#234e94",
+  //       confirmButtonText: "OK",
+  //     });
+  //       navigate("/Login");
+  //     } else {
+  //       alert(responseData?.message || "Sign-up failed");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error signing up:", error);
+  //     alert("Something went wrong! Please try again.");
+  //   }
+  // };
+
+ 
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
